@@ -9,7 +9,8 @@ const visible : Variable<boolean> = Variable(false)
 function SysTray() {
   const tray = Tray.get_default()
 
-  return <box className="SysTray">
+  return <box 
+    className={bind(tray, "items").as(items => (items.length == 0 ? "empty" : "") + " SysTray Island")}>
     {bind(tray, "items").as(items => items.map(item => (
       <menubutton
         className="bottom-button"
@@ -26,7 +27,7 @@ function SysTray() {
 function Workspaces() {
   const hypr = Hyprland.get_default()
 
-  return <box className="Workspaces">
+  return <box className="Workspaces Island">
     {bind(hypr, "workspaces").as(wss => wss
       .filter(ws => !(ws.id >= -99 && ws.id <= -2)) // filter out special workspaces
       .sort((a, b) => a.id - b.id)
@@ -46,14 +47,14 @@ function Time({ format = "%b %d %H:%M" }) {
     GLib.DateTime.new_now_local().format(format)!)
 
   return <label
-    className="Time"
+    className="Time Island"
     onDestroy={() => time.drop()}
     label={time()} />
 }
 
 function SysBox() {
   return <button 
-    className="SysBox bottom-button"
+    className="SysBox circle-button Island"
     onClicked={() => visible.set(!visible.get())}>
     <centerbox>
       <icon 
@@ -84,14 +85,15 @@ export default function Bar(monitor: Gdk.Monitor) {
     layer={Astal.Layer.TOP}
     anchor={TOP | LEFT | RIGHT}>
     <centerbox>
-      <centerbox hexpand halign={Gtk.Align.START} className="LeftBox">
-        <Workspaces hexpand halign={Gtk.Align.START} />
-        <SysTray  hexpand halign={Gtk.Align.END}/>
-      </centerbox>
-      <box hexpand halign={Gtk.Align.CENTER}>
+      <box halign={Gtk.Align.START} className="LeftBox">
+        <Workspaces/>
+        <box hexpand halign={Gtk.Align.CENTER}></box>
+        <SysTray/>
+      </box>
+      <box halign={Gtk.Align.CENTER}>
         <Time />
       </box>
-      <box hexpand halign={Gtk.Align.END}>
+      <box halign={Gtk.Align.END}>
         <SysBox/>
       </box>
     </centerbox>
