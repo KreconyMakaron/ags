@@ -4,13 +4,11 @@ import ControlCenter from "./controlcenter"
 import Tray from "gi://AstalTray"
 import Hyprland from "gi://AstalHyprland"
 
-const visible : Variable<boolean> = Variable(false)
-
 function SysTray() {
   const tray = Tray.get_default()
 
   return <box 
-    className={bind(tray, "items").as(items => (items.length == 0 ? "empty" : "") + " SysTray Island")}>
+    className={bind(tray, "items").as(items => (items.length == 0 ? "hidden" : "") + " SysTray Island")}>
     {bind(tray, "items").as(items => items.map(item => (
       <menubutton
         className="bottom-button"
@@ -52,7 +50,7 @@ function Time({ format = "%b %d %H:%M" }) {
     label={time()} />
 }
 
-function SysBox() {
+function SysBox({ visible }: { visible: Variable<boolean> }) {
   return <button 
     className="SysBox circle-button Island"
     onClicked={() => visible.set(!visible.get())}>
@@ -75,6 +73,7 @@ function SysBox() {
 
 export default function Bar(monitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
+  const visible = Variable(false)
   App.add_window(ControlCenter(monitor, visible))
 
   return <window
@@ -94,7 +93,7 @@ export default function Bar(monitor: Gdk.Monitor) {
         <Time />
       </box>
       <box halign={Gtk.Align.END}>
-        <SysBox/>
+        <SysBox visible={visible}/>
       </box>
     </centerbox>
   </window>
