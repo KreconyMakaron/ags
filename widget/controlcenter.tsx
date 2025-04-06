@@ -1,7 +1,7 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3"
 import { bind } from "astal"
 import Wp from "gi://AstalWp"
-import Brightness from "./brightness"
+import Brightness from "../lib/brightness"
 import Variable from "astal/variable"
 
 function VolumeSlider() {
