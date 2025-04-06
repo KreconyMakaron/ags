@@ -37,22 +37,22 @@ function BrightnessSlider() {
 function ButtonBox() {
   return <box className="ButtonBox">
     <box>
-      <button>
+      <button className="circle-button">
         <icon icon="power-symbolic"/>
       </button>
     </box>
     <box>
-      <button>
+      <button className="circle-button">
         <icon icon="reboot-symbolic"/>
       </button>
     </box>
     <box>
-      <button>
+      <button className="circle-button">
         <icon icon="lock-symbolic"/>
       </button>
     </box>
     <box>
-      <button>
+      <button className="circle-button">
         <icon icon="sleep-symbolic"/>
       </button>
     </box>
