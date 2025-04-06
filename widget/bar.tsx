@@ -12,6 +12,7 @@ function SysTray() {
   return <box className="SysTray">
     {bind(tray, "items").as(items => items.map(item => (
       <menubutton
+        className="bottom-button"
         tooltipMarkup={bind(item, "tooltipMarkup")}
         usePopover={false}
         actionGroup={bind(item, "actionGroup").as(ag => ["dbusmenu", ag])}
@@ -31,9 +32,9 @@ function Workspaces() {
       .sort((a, b) => a.id - b.id)
       .map(ws => (
         <button
+          className={bind(hypr, "focusedWorkspace").as(fw =>
+            ws === fw ? "focused" : "")}
           onClicked={() => ws.focus()}>
-          <icon icon={bind(hypr, "focusedWorkspace").as(fw =>
-            ws === fw ? "circle-full" : "circle-empty")} />
         </button>
       ))
     )}
@@ -50,23 +51,22 @@ function Time({ format = "%b %d %H:%M" }) {
     label={time()} />
 }
 
-
 function SysBox() {
   return <button 
-    className="SysBox"
+    className="SysBox bottom-button"
     onClicked={() => visible.set(!visible.get())}>
     <centerbox>
       <icon 
         halign={Gtk.Align.START}
-        icon="wifi"
+        icon="wifi-symbolic"
       />
       <icon 
         halign={Gtk.Align.CENTER}
-        icon="volume-2"
+        icon="volume-2-symbolic"
       />
       <icon 
         halign={Gtk.Align.END}
-        icon="power"
+        icon="power-symbolic"
       />
     </centerbox>
   </button>

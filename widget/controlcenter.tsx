@@ -24,7 +24,7 @@ function BrightnessSlider() {
 
   return <box className="Slider">
     <icon 
-      icon="brightness-high"
+      icon="brightness-high-symbolic"
     />
     <slider
       hexpand
@@ -38,22 +38,22 @@ function ButtonBox() {
   return <box className="ButtonBox">
     <box>
       <button>
-        <icon icon="power"/>
+        <icon icon="power-symbolic"/>
       </button>
     </box>
     <box>
       <button>
-        <icon icon="reboot"/>
+        <icon icon="reboot-symbolic"/>
       </button>
     </box>
     <box>
       <button>
-        <icon icon="lock"/>
+        <icon icon="lock-symbolic"/>
       </button>
     </box>
     <box>
       <button>
-        <icon icon="sleep"/>
+        <icon icon="sleep-symbolic"/>
       </button>
     </box>
   </box>
