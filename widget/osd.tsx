@@ -12,6 +12,7 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
   const dynamicIcon = DynamicIcon.get_default();
 
   const value = Variable(0)
+  const grayed = Variable(false)
   const classname = Variable("progress");
 
   let count = 0
@@ -32,16 +33,19 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
       setup={(self) => {
         self.hook(brightness, "notify::screen", () => {
           classname.set("progress")
+          grayed.set(false);
           show(brightness.screen)
         })
 
         if (speaker) {
           self.hook(speaker, "notify::volume", () => {
             classname.set("progress")
+            if(speaker.mute) grayed.set(true);
             show(speaker.volume)
           })
           self.hook(speaker, "notify::mute", () => {
             classname.set("popup")
+            grayed.set(false);
             show(speaker.volume)
           })
         }
@@ -52,7 +56,10 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
     <box className={classname()} orientation={1}>
         <centerbox>
           <icon icon={bind(dynamicIcon, "recent")} />
-          <levelbar valign={Gtk.Align.CENTER} widthRequest={100} value={value()} />
+          <levelbar 
+            valign={Gtk.Align.CENTER}
+            widthRequest={100} value={value()}
+            className={bind(grayed).as((m) => (m ? "grayed " : "") + "continuous horizontal")} />
           <label 
             label={value(v => `${Math.floor(v * 100)}%`)} 
             width-chars={4}

@@ -3,6 +3,7 @@ import { Variable, GLib, bind } from "astal"
 import ControlCenter from "./controlcenter"
 import Tray from "gi://AstalTray"
 import Hyprland from "gi://AstalHyprland"
+import DynamicIcon from "../lib/utils.tsx"
 
 function SysTray() {
   const tray = Tray.get_default()
@@ -51,6 +52,8 @@ function Time({ format = "%b %d %H:%M" }) {
 }
 
 function SysBox({ visible }: { visible: Variable<boolean> }) {
+  const dynamicIcon = DynamicIcon.get_default()
+
   return <button 
     className="SysBox circle-button Island"
     onClicked={() => visible.set(!visible.get())}>
@@ -61,11 +64,11 @@ function SysBox({ visible }: { visible: Variable<boolean> }) {
       />
       <icon 
         halign={Gtk.Align.CENTER}
-        icon="volume-2-symbolic"
+        icon={bind(dynamicIcon, "volume")}
       />
       <icon 
         halign={Gtk.Align.END}
-        icon="power-symbolic"
+        icon="battery-symbolic"
       />
     </centerbox>
   </button>

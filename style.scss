@@ -13,7 +13,7 @@ $slider-color: $fg;
 $animation-speed: 200ms;
 $side-margins: .5em;
 $radius: 1em;
-
+  
 icon {
   background-color: transparent;
   color: $fg;
@@ -49,15 +49,15 @@ icon {
 
 .Island:not(.hidden) {
   background-color: $bg;
-  border-radius: $radius;
-  padding: .1em .7em;
+  // border-radius: $radius;
+  // padding: .1em .7em;
+  padding: 0em .4em;
 }
 
 window.Bar {
   background: transparent;
   font-family: "Jetbrains Mono";
   color: $fg;
-
 
   .Time {
     font-weight: bold;
@@ -66,8 +66,8 @@ window.Bar {
 
   >centerbox {
     padding: 0 $side-margins;
-    margin: .3em 0;
-    // background: $bg;
+    // margin: .3em 0;
+    background: $bg;
   }
 
   .LeftBox {
@@ -135,7 +135,7 @@ window.ControlCenter {
 
     icon {
       color: $slider-color;
-      margin-right: .5em;
+      margin-right: .3em;
       font-size: 1.5em;
     }
 
@@ -145,17 +145,21 @@ window.ControlCenter {
     }
 
     highlight {
-      background-color: $slider-color;
-      min-height: .1em;
+      min-height: .5em;
       border-radius: $radius;
     }
+
     slider {
       background-color: $slider-color;
       border-radius: $radius;
-      min-height: 1em;
-      min-width: 1em;
-      margin: -.2em;
     }
+  }
+
+  .Slider:not(.grayed) highlight {
+    background-color: $slider-color;
+  }
+  .Slider.grayed highlight {
+    background-color: gtkalpha($slider-color, .4);
   }
 
   .ButtonBox {
@@ -207,14 +211,16 @@ window.OSD {
         font-size: 1.2em;
       }
 
-      levelbar {
-        trough {
-          margin: 0 .5em;
-        }
+      levelbar trough {
+        margin: 0 .5em;
+      }
 
-        block:not(.empty) {
-          background-color: $fg;
-        }
+      levelbar:not(.grayed) block:not(.empty) {
+        background-color: $fg;
+
+      }
+      levelbar.grayed block:not(.empty) {
+        background-color: gtkalpha($fg, .4);
       }
 
       label {

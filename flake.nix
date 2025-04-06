@@ -23,13 +23,14 @@
       ags.packages.${system}.network
       ags.packages.${system}.battery
       ags.packages.${system}.wireplumber
+      ags.packages.${system}.apps
     ];
   in {
     packages.${system} = {
       default = ags.lib.bundle {
         inherit pkgs;
         src = ./.;
-        name = "my-shell";
+        name = "kreshell";
         entry = "app.ts";
 
         # additional libraries and executables to add to gjs' runtime
