@@ -2,15 +2,19 @@ import { App, Astal, Gtk, Gdk } from "astal/gtk3"
 import { bind } from "astal"
 import Wp from "gi://AstalWp"
 import Brightness from "../lib/brightness"
+import DynamicIcon from "../lib/utils.tsx"
 import Variable from "astal/variable"
 
 function VolumeSlider() {
   const speaker = Wp.get_default()?.audio.defaultSpeaker!
+  const dynamicIcon = DynamicIcon.get_default()
 
-  return <box className="Slider">
-    <icon 
-      icon={bind(speaker, "VolumeIcon")}
-    />
+  return <box className={bind(speaker, "mute").as((m) => (m ? "grayed " : "") + "Slider")}>
+    <button onClicked={() => speaker.mute = !speaker.mute}>
+      <icon 
+        icon={bind(dynamicIcon, "volume")}
+      />
+    </button>
     <slider
       hexpand
       onDragged={({ value }) => speaker.volume = value}
@@ -21,10 +25,11 @@ function VolumeSlider() {
 
 function BrightnessSlider() {
   const brightness = Brightness.get_default()
+  const dynamicIcon = DynamicIcon.get_default()
 
   return <box className="Slider">
     <icon 
-      icon="brightness-high-symbolic"
+      icon={bind(dynamicIcon, "brightness")}
     />
     <slider
       hexpand
