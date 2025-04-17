@@ -23,6 +23,7 @@
       ags.packages.${system}.network
       ags.packages.${system}.battery
       ags.packages.${system}.wireplumber
+      ags.packages.${system}.apps
     ];
   in {
     packages.${system} = {

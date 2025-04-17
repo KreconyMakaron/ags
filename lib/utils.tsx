@@ -1,6 +1,7 @@
 import Wp, { AstalWpEndpoint } from "gi://AstalWp"
 import { Variable, bind } from "astal"
 import Brightness from "./brightness"
+import Battery, { AstalBatteryDevice } from "gi://AstalBattery"
 import GObject, { register, property } from "astal/gobject"
 
 function getVolumeIcon(speakerObj: AstalWpEndpoint) {
@@ -10,10 +11,15 @@ function getVolumeIcon(speakerObj: AstalWpEndpoint) {
   else return "volume-2-symbolic"
 }
 
-function getBrightessIcon(brightness: Brightness) {
-  if(brightness.screen < .3) return "brightness-low-symbolic"
-  if(brightness.screen < .6) return "brightness-half-symbolic"
+function getBrightessIcon(brightObj: Brightness) {
+  if(brightObj.screen < .3) return "brightness-low-symbolic"
+  if(brightObj.screen < .6) return "brightness-half-symbolic"
   else return "brightness-high-symbolic"
+}
+
+function getBatteryIcon(batteryObj: AstalBatteryDevice) {
+  if(batteryObj.is_battery == false) return "power-symbolic"
+  
 }
 
 @register({ GTypeName: "DynamicIcon" })

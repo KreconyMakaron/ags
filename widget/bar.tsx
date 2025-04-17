@@ -68,7 +68,7 @@ function SysBox({ visible }: { visible: Variable<boolean> }) {
       />
       <icon 
         halign={Gtk.Align.END}
-        icon="power-symbolic"
+        icon="battery-symbolic"
       />
     </centerbox>
   </button>
