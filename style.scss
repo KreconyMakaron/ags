@@ -13,7 +13,7 @@ $slider-color: $fg;
 $animation-speed: 200ms;
 $side-margins: .5em;
 $radius: 1em;
-
+  
 icon {
   background-color: transparent;
   color: $fg;
@@ -49,15 +49,15 @@ icon {
 
 .Island:not(.hidden) {
   background-color: $bg;
-  border-radius: $radius;
-  padding: .1em .7em;
+  // border-radius: $radius;
+  // padding: .1em .7em;
+  padding: 0em .4em;
 }
 
 window.Bar {
   background: transparent;
   font-family: "Jetbrains Mono";
   color: $fg;
-
 
   .Time {
     font-weight: bold;
@@ -66,8 +66,8 @@ window.Bar {
 
   >centerbox {
     padding: 0 $side-margins;
-    margin: .3em 0;
-    // background: $bg;
+    // margin: .3em 0;
+    background: $bg;
   }
 
   .LeftBox {
