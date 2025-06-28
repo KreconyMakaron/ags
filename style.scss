@@ -40,7 +40,9 @@ icon {
   margin: 0;
   border: .1em solid transparent;
   transition: border $animation-speed ease;
+}
 
+.circle-button-hover {
   &:hover {
     border: .1em solid $fg;
     border-radius: 0;
@@ -185,6 +187,7 @@ window.ControlCenter {
 
 window.OSD {
   .progress {
+    margin-top: .7em;
     >centerbox {
       & {
         padding: .5em 1em;
