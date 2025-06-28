@@ -41,7 +41,7 @@ function Workspaces() {
   </box>
 }
 
-function Time({ format = "%a %m | %H:%M" }) {
+function Time({ format = "%a %d | %H:%M" }) {
   const time = Variable<string>("").poll(1000, () => GLib.DateTime.new_now_local().format(format)!)
 
   return <label

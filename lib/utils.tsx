@@ -1,5 +1,5 @@
 import Wp, { AstalWpEndpoint } from "gi://AstalWp"
-import { Variable, bind } from "astal"
+import { Variable, GLib, bind } from "astal"
 import Brightness from "./brightness"
 import Battery, { AstalBatteryDevice } from "gi://AstalBattery"
 import GObject, { register, property } from "astal/gobject"
@@ -37,6 +37,23 @@ export default class DynamicIcon extends GObject.Object {
     return this.instance
   }
 
+  #inhibited = false
+  #timeoutID = null
+
+  // lock notify::value for 200ms, so that sliders
+  // in controlcenter dont trigger osd
+  inhibit() {
+    this.#inhibited = true
+    if(this.#timeoutID !== null) {
+      clearTimeout(this.#timeoutID)
+    }
+
+    this.#timeoutID = setTimeout(() => {
+      this.#inhibited = false
+      this.#timeoutID = null;
+    }, 200);
+  }
+
   #speakerObj = Wp.get_default()!.get_default_speaker()
   #brightObj = Brightness.get_default()
   #batteryObj = Battery.get_default()
@@ -44,8 +61,15 @@ export default class DynamicIcon extends GObject.Object {
   #volume = getVolumeIcon(this.#speakerObj)
   #brightness = getBrightessIcon(this.#brightObj)
   #battery = getBatteryIcon(this.#batteryObj)
-  #recent = this.#volume
-  #popup = this.#volume
+  #icon = this.#volume
+  #value = this.#speakerObj.volume
+  #mute = this.#speakerObj.mute
+
+  @property(Boolean)
+  get mute() { return this.#mute }
+
+  @property(Number)
+  get value() { return this.#value }
 
   @property(String)
   get volume() { return this.#volume }
@@ -57,42 +81,41 @@ export default class DynamicIcon extends GObject.Object {
   get battery() { return this.#battery }
 
   @property(String)
-  get recent() { return this.#recent }
-
-  @property(String)
-  get popup() { return this.#popup }
+  get icon() { return this.#icon }
 
   constructor() {
     super()
     this.#speakerObj.connect("notify::volume", () => {
       this.#volume = getVolumeIcon(this.#speakerObj)
-      this.#recent = this.#volume
+      this.#value = this.#speakerObj.volume
+      this.#mute = this.#speakerObj.mute
+      this.#icon = this.#volume
       this.notify("volume")
-      this.notify("recent")
+      this.notify("icon")
+      if(this.#inhibited == false) this.notify("value")
     })
 
     this.#speakerObj.connect("notify::mute", () => {
       this.#volume = getVolumeIcon(this.#speakerObj)
-      this.#recent = this.#volume
-      this.#popup = this.#volume
+      this.#icon = this.#volume
+      this.#mute = this.#speakerObj.mute
+      this.#value = this.#speakerObj.volume
       this.notify("volume")
-      this.notify("recent")
-      this.notify("popup")
+      this.notify("icon")
+      if(this.#inhibited == false) this.notify("value")
     })
 
     this.#brightObj.connect("notify::screen", () => {
       this.#brightness = getBrightessIcon(this.#brightObj)
-      this.#recent = this.#brightness
+      this.#value = this.#brightObj.screen
+      this.#icon = this.#brightness
+      this.#mute = false
       this.notify("brightness")
-      this.notify("recent")
+      this.notify("icon")
+      if(this.#inhibited == false) this.notify("value")
     })
 
-    this.#brightObj.connect("notify::kbd", () => {
-      this.#popup = "power-symbolic"
-      this.notify("popup")
-    })
-
-    this.#batteryObj.connect("notify::percenteage", () => {
+    this.#batteryObj.connect("notify::percentage", () => {
       this.#battery = getBatteryIcon(this.#batteryObj)
     })
   }

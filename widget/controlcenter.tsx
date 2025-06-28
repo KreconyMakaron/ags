@@ -10,14 +10,20 @@ function VolumeSlider() {
   const dynamicIcon = DynamicIcon.get_default()
 
   return <box className={bind(speaker, "mute").as((m) => (m ? "grayed " : "") + "Slider")}>
-    <button onClicked={() => speaker.mute = !speaker.mute}>
+    <button onClicked={() => {
+        dynamicIcon.inhibit()
+        speaker.mute = !speaker.mute
+      }}>
       <icon 
         icon={bind(dynamicIcon, "volume")}
       />
     </button>
     <slider
       hexpand
-      onDragged={({ value }) => speaker.volume = value}
+      onDragged={({ value }) => {
+        dynamicIcon.inhibit()
+        speaker.volume = value
+      }}
       value={bind(speaker, "volume")}
     />
   </box>
@@ -34,7 +40,10 @@ function BrightnessSlider() {
     <slider
       hexpand
       value={bind(brightness, "screen")}
-      onDragged={({ value }) => brightness.screen = value}>
+      onDragged={({ value }) => {
+        dynamicIcon.inhibit()
+        brightness.screen = value}
+      }>
     </slider>
   </box>
 }
@@ -42,22 +51,22 @@ function BrightnessSlider() {
 function ButtonBox() {
   return <box className="ButtonBox">
     <box>
-      <button className="circle-button">
+      <button className="circle-button circle-button-hover">
         <icon icon="power-symbolic"/>
       </button>
     </box>
     <box>
-      <button className="circle-button">
+      <button className="circle-button circle-button-hover">
         <icon icon="reboot-symbolic"/>
       </button>
     </box>
     <box>
-      <button className="circle-button">
+      <button className="circle-button circle-button-hover">
         <icon icon="lock-symbolic"/>
       </button>
     </box>
     <box>
-      <button className="circle-button">
+      <button className="circle-button circle-button-hover">
         <icon icon="sleep-symbolic"/>
       </button>
     </box>

@@ -7,19 +7,16 @@ import Brightness from "../lib/brightness"
 import DynamicIcon from "../lib/utils"
 
 function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
-  const brightness = Brightness.get_default()
-  const speaker = Wp.get_default()!.get_default_speaker()
   const dynamicIcon = DynamicIcon.get_default();
 
   const value = Variable(0)
   const grayed = Variable(false)
-  const firstTimeVolume = Variable(true)
-  const firstTimeMute = Variable(true)
+  grayed.set(dynamicIcon.mute)
+  const skipCounter = Variable(0)
 
   let count = 0
-  function show(v: number) {
+  function show() {
     visible.set(true)
-    value.set(v)
     count++
     timeout(2000, () => {
       count--
@@ -32,37 +29,27 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
   return (
     <revealer
       setup={(self) => {
-        self.hook(brightness, "notify::screen", () => {
-          grayed.set(false);
-          show(brightness.screen)
-        })
+        self.hook(dynamicIcon, "notify::value", () => {
+          if(dynamicIcon.mute == false && skipCounter.get() < 2) {
+            skipCounter.set(skipCounter.get() + 1)
+            return
+          }
+          if(dynamicIcon.mute == true &&skipCounter.get() < 1) {
+            skipCounter.set(1000)
+            return
+          }
 
-        if (speaker) {
-          self.hook(speaker, "notify::volume", () => {
-            if(firstTimeVolume.get() == true) {
-              firstTimeVolume.set(false)
-              return
-            }
-            grayed.set(speaker.mute);
-            show(speaker.volume)
-          })
-          self.hook(speaker, "notify::mute", () => {
-            if(firstTimeMute.get() == true) {
-              firstTimeMute.set(false)
-              grayed.set(speaker.mute);
-              return
-            }
-            grayed.set(speaker.mute);
-            show(speaker.volume)
-          })
-        }
+          value.set(dynamicIcon.value)
+          grayed.set(dynamicIcon.mute)
+          show()
+        })
       }}
       revealChild={visible()}
       transitionType={Gtk.RevealerTransitionType.SLIDE_UP}
       >
     <box className="progress" orientation={1}>
         <centerbox>
-          <icon icon={bind(dynamicIcon, "recent")} />
+          <icon icon={bind(dynamicIcon, "icon")} />
           <levelbar 
             valign={Gtk.Align.CENTER}
             widthRequest={100} value={value()}
@@ -72,7 +59,6 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
             width-chars={4}
             xalign={1}/>
         </centerbox>
-        <icon icon={bind(dynamicIcon, "popup")} />
     </box>
   </revealer>
   )
