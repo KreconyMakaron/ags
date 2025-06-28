@@ -61,7 +61,7 @@ window.Bar {
 
   .Time {
     font-weight: bold;
-    font-size: .9em;
+    font-size: .7em;
   }
 
   >centerbox {
@@ -184,19 +184,6 @@ window.ControlCenter {
 }
 
 window.OSD {
-  .popup {
-    >centerbox {
-      opacity: 0;
-    }
-    >icon {
-      font-size: 2em;
-      padding: .3em;
-      background-color: $bg;
-      border-radius: $radius;
-      margin: -.6em 2em 0 2em;
-      opacity: 1;
-    }
-  }
   .progress {
     >centerbox {
       & {

@@ -13,7 +13,8 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
 
   const value = Variable(0)
   const grayed = Variable(false)
-  const classname = Variable("progress");
+  const firstTimeVolume = Variable(true)
+  const firstTimeMute = Variable(true)
 
   let count = 0
   function show(v: number) {
@@ -32,20 +33,26 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
     <revealer
       setup={(self) => {
         self.hook(brightness, "notify::screen", () => {
-          classname.set("progress")
           grayed.set(false);
           show(brightness.screen)
         })
 
         if (speaker) {
           self.hook(speaker, "notify::volume", () => {
-            classname.set("progress")
-            if(speaker.mute) grayed.set(true);
+            if(firstTimeVolume.get() == true) {
+              firstTimeVolume.set(false)
+              return
+            }
+            grayed.set(speaker.mute);
             show(speaker.volume)
           })
           self.hook(speaker, "notify::mute", () => {
-            classname.set("popup")
-            grayed.set(false);
+            if(firstTimeMute.get() == true) {
+              firstTimeMute.set(false)
+              grayed.set(speaker.mute);
+              return
+            }
+            grayed.set(speaker.mute);
             show(speaker.volume)
           })
         }
@@ -53,7 +60,7 @@ function OnScreenPopup({ visible }: { visible: Variable<boolean> }) {
       revealChild={visible()}
       transitionType={Gtk.RevealerTransitionType.SLIDE_UP}
       >
-    <box className={classname()} orientation={1}>
+    <box className="progress" orientation={1}>
         <centerbox>
           <icon icon={bind(dynamicIcon, "recent")} />
           <levelbar 

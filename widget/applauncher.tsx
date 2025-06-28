@@ -76,7 +76,6 @@ export default function Applauncher() {
             className="not-found"
             vertical
             visible={list.as(l => l.length === 0)}>
-            <icon icon="system-search-symbolic" />
             <label label="No match found" />
           </box>
           </box>
