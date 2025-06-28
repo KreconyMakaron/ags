@@ -4,15 +4,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    astal = {
-      url = "github:aylur/astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     ags = {
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.astal.follows = "astal";
     };
   };
 
@@ -20,41 +14,38 @@
     self,
     nixpkgs,
     ags,
-    astal
   }: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-    astalpkgs = astal.packages.${system};
-  in 
-  {
-    packages.${system}.default = pkgs.stdenv.mkDerivation rec { 
-      pname = "kreshell";
-      name = pname;
+    dependencies = [
+      ags.packages.${system}.tray
+      ags.packages.${system}.hyprland
+      ags.packages.${system}.network
+      ags.packages.${system}.battery
+      ags.packages.${system}.wireplumber
+      ags.packages.${system}.apps
+    ];
+  in {
+    packages.${system} = {
+      default = ags.lib.bundle {
+        inherit pkgs;
+        src = ./.;
+        name = "kreshell";
+        entry = "app.ts";
 
-      src = ./.;
+        # additional libraries and executables to add to gjs' runtime
+        extraPackages = dependencies;
+      };
+    };
 
-      nativeBuildInputs = with pkgs; [
-        wrapGAppsHook
-        gobject-introspection
-        ags.packages.${system}.default
-      ];
-
-      buildInputs = [
-        pkgs.glib
-        pkgs.gjs
-        astalpkgs.io
-        astalpkgs.astal4
-        astalpkgs.tray
-        astalpkgs.hyprland
-        astalpkgs.network
-        astalpkgs.battery
-        astalpkgs.wireplumber
-        astalpkgs.apps
-      ];
-
-      installPhase = ''
-        ags bundle app.ts $out/bin/my-shell
-      '';
+    devShells.${system} = {
+      default = pkgs.mkShell {
+        buildInputs = [
+          (ags.packages.${system}.default.override {
+            extraPackages = dependencies;
+          })
+        ];
+      };
     };
   };
 }
