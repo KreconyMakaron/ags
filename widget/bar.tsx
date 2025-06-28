@@ -41,9 +41,8 @@ function Workspaces() {
   </box>
 }
 
-function Time({ format = "%b %d %H:%M" }) {
-  const time = Variable<string>("").poll(1000, () =>
-    GLib.DateTime.new_now_local().format(format)!)
+function Time({ format = "%a %m | %H:%M" }) {
+  const time = Variable<string>("").poll(1000, () => GLib.DateTime.new_now_local().format(format)!)
 
   return <label
     className="Time Island"
@@ -68,7 +67,7 @@ function SysBox({ visible }: { visible: Variable<boolean> }) {
       />
       <icon 
         halign={Gtk.Align.END}
-        icon="battery-symbolic"
+        icon={bind(dynamicIcon, "battery")}
       />
     </centerbox>
   </button>

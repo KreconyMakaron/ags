@@ -18,8 +18,15 @@ function getBrightessIcon(brightObj: Brightness) {
 }
 
 function getBatteryIcon(batteryObj: AstalBatteryDevice) {
-  if(batteryObj.is_battery == false) return "power-symbolic"
-  
+  if(batteryObj.charging == true) {
+    if(batteryObj.percentage >= .99) return "battery-full-symbolic"
+    return "battery-charging-symbolic"
+  }
+  if(batteryObj.percentage >= .875) return "battery-full-symbolic"
+  if(batteryObj.percentage >= .625) return "battery-75-symbolic"
+  if(batteryObj.percentage >= .375) return "battery-50-symbolic"
+  if(batteryObj.percentage >= .125) return "battery-25-symbolic"
+  return "battery-0-symbolic"
 }
 
 @register({ GTypeName: "DynamicIcon" })
@@ -32,9 +39,11 @@ export default class DynamicIcon extends GObject.Object {
 
   #speakerObj = Wp.get_default()!.get_default_speaker()
   #brightObj = Brightness.get_default()
+  #batteryObj = Battery.get_default()
 
   #volume = getVolumeIcon(this.#speakerObj)
   #brightness = getBrightessIcon(this.#brightObj)
+  #battery = getBatteryIcon(this.#batteryObj)
   #recent = this.#volume
   #popup = this.#volume
 
@@ -43,6 +52,9 @@ export default class DynamicIcon extends GObject.Object {
 
   @property(String)
   get brightness() { return this.#brightness }
+
+  @property(String)
+  get battery() { return this.#battery }
 
   @property(String)
   get recent() { return this.#recent }
@@ -78,6 +90,10 @@ export default class DynamicIcon extends GObject.Object {
     this.#brightObj.connect("notify::kbd", () => {
       this.#popup = "power-symbolic"
       this.notify("popup")
+    })
+
+    this.#batteryObj.connect("notify::percenteage", () => {
+      this.#battery = getBatteryIcon(this.#batteryObj)
     })
   }
 }
