@@ -1,5 +1,5 @@
 {
-  description = "My Awesome Desktop Shell";
+  description = "AGS Desktop Shell";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -11,9 +11,9 @@
   };
 
   outputs = {
-    self,
     nixpkgs,
     ags,
+    ...
   }: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
@@ -30,7 +30,7 @@
       default = ags.lib.bundle {
         inherit pkgs;
         src = ./.;
-        name = "kreshell";
+        name = "ags";
         entry = "app.ts";
 
         # additional libraries and executables to add to gjs' runtime
