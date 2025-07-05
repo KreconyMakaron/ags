@@ -4,48 +4,43 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
+    flake-utils.url = "github:numtide/flake-utils";
+
     ags = {
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = {
-    nixpkgs,
-    ags,
-    ...
-  }: let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    dependencies = [
-      ags.packages.${system}.tray
-      ags.packages.${system}.hyprland
-      ags.packages.${system}.network
-      ags.packages.${system}.battery
-      ags.packages.${system}.wireplumber
-      ags.packages.${system}.apps
-    ];
-  in {
-    packages.${system} = {
-      default = ags.lib.bundle {
-        inherit pkgs;
-        src = ./.;
-        name = "ags";
-        entry = "app.ts";
-
-        # additional libraries and executables to add to gjs' runtime
-        extraPackages = dependencies;
-      };
-    };
-
-    devShells.${system} = {
-      default = pkgs.mkShell {
-        buildInputs = [
-          (ags.packages.${system}.default.override {
-            extraPackages = dependencies;
-          })
+  outputs = { nixpkgs, ags, flake-utils, ... }: 
+    (flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        dependencies = with ags.packages.${system}; [
+          tray
+          hyprland
+          network
+          battery
+          wireplumber
+          apps
         ];
-      };
-    };
-  };
+      in {
+        packages. default = ags.lib.bundle {
+          inherit pkgs;
+          src = ./.;
+          name = "ags";
+          entry = "app.ts";
+
+          extraPackages = dependencies;
+        };
+
+        devShells. default = pkgs.mkShell {
+          buildInputs = [
+            (ags.packages.${system}.default.override {
+              extraPackages = dependencies;
+            })
+          ];
+        };
+      }
+  ));
 }
