@@ -12,7 +12,13 @@
     };
   };
 
-  outputs = { nixpkgs, ags, flake-utils, ... }: 
+  outputs = { self, nixpkgs, ags, flake-utils, ... }: 
+    {
+      nixosModules.default = { config, lib, pkgs, ... }:
+        import ./module.nix {
+          inherit lib pkgs config self;
+        };
+    } // 
     (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -23,9 +29,11 @@
           battery
           wireplumber
           apps
+          pkgs.bash
+          pkgs.brightnessctl
         ];
       in {
-        packages. default = ags.lib.bundle {
+        packages.default = ags.lib.bundle {
           inherit pkgs;
           src = ./.;
           name = "ags";
