@@ -1,4 +1,10 @@
-{lib, pkgs, config, self, ...}: 
+{
+  lib,
+  pkgs,
+  config,
+  self,
+  ...
+}:
 with lib; let
   cfg = config.services.ags;
 in {
@@ -19,8 +25,8 @@ in {
       Unit = {
         Description = "AGS Shell";
         Documentation = "https://github.com/KreconyMakaron/ags";
-        PartOf = [ "graphical-session.target" ];
-        After = [ "graphical-session-pre.target" ];
+        PartOf = ["graphical-session.target"];
+        After = ["graphical-session-pre.target"];
       };
 
       Service = {

@@ -17,15 +17,27 @@
     };
   };
 
-  outputs = { self, nixpkgs, ags, flake-utils, ... }: 
+  outputs = {
+    self,
+    nixpkgs,
+    ags,
+    flake-utils,
+    ...
+  }:
     {
-      homeManagerModules.default = {config, lib, pkgs, ...}: import ./module.nix {
-        inherit lib pkgs config self;
-      };
-    } // 
-    (flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
+      homeManagerModules.default = {
+        config,
+        lib,
+        pkgs,
+        ...
+      }:
+        import ./module.nix {
+          inherit lib pkgs config self;
+        };
+    }
+    // (flake-utils.lib.eachDefaultSystem (
+      system: let
+        pkgs = import nixpkgs {inherit system;};
         dependencies = with ags.packages.${system}; [
           tray
           hyprland
@@ -37,7 +49,7 @@
           pkgs.brightnessctl
         ];
       in {
-        formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
+        formatter = pkgs.alejandra;
         packages.default = ags.lib.bundle {
           inherit pkgs;
           src = ./.;
@@ -55,5 +67,5 @@
           ];
         };
       }
-  ));
+    ));
 }
