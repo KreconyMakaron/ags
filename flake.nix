@@ -6,6 +6,11 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ags = {
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,10 +19,9 @@
 
   outputs = { self, nixpkgs, ags, flake-utils, ... }: 
     {
-      nixosModules.default = { config, lib, pkgs, ... }:
-        import ./module.nix {
-          inherit lib pkgs config self;
-        };
+      homeManagerModules.default = {config, lib, pkgs, ...}: import ./module.nix {
+        inherit lib pkgs config self;
+      };
     } // 
     (flake-utils.lib.eachDefaultSystem (system:
       let
@@ -33,6 +37,7 @@
           pkgs.brightnessctl
         ];
       in {
+        formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
         packages.default = ags.lib.bundle {
           inherit pkgs;
           src = ./.;
