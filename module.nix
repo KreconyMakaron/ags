@@ -7,12 +7,21 @@
 }:
 with lib; let
   cfg = config.services.ags;
+  shellBin = "${self.packages.${pkgs.system}.default}/bin/ags";
+  unitName = "ags";
 in {
   options.services.ags = {
     enable = mkEnableOption "whether to enable a custom ags shell";
-    autostart = mkOption {
-      type = types.bool;
-      default = true;
+    hyprlandIntegration = {
+      enable = mkEnableOption "whether to integrate with hyprland";
+      autostart.enable = mkEnableOption "whether to autostart the shell using exec-once";
+      keybinds = {
+        enable = mkEnableOption "whether to set keybinds in hyprland from this module";
+        openAppLauncher = mkOption {
+          type = types.str;
+          default = "SUPER,D";
+        };
+      };
     };
   };
 
@@ -21,7 +30,19 @@ in {
       self.packages.${pkgs.system}.default
     ];
 
-    systemd.user.services.ags = {
+    wayland.windowManager.hyprland.settings = let
+      hcfg = cfg.hyprlandIntegration;
+    in
+      mkIf hcfg.enable {
+        exec-once = mkIf hcfg.autostart.enable [
+          "systemctl --user restart ${unitName}.service"
+        ];
+        bind = mkIf cfg.hyprlandIntegration.keybinds.enable [
+          "${cfg.hyprlandIntegration.keybinds.openAppLauncher},exec,${shellBin} toggle launcher"
+        ];
+      };
+
+    systemd.user.services.${unitName} = {
       Unit = {
         Description = "AGS Shell";
         Documentation = "https://github.com/KreconyMakaron/ags";
@@ -31,7 +52,7 @@ in {
 
       Service = {
         Type = "simple";
-        ExecStart = "${self.packages.${pkgs.system}.default}/bin/ags";
+        ExecStart = "${shellBin}";
         Restart = "on-failure";
       };
     };
