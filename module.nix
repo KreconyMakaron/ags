@@ -3,11 +3,14 @@
   pkgs,
   config,
   self,
+  astal,
   ...
 }:
 with lib; let
   cfg = config.services.ags;
+  hcfg = cfg.hyprlandIntegration;
   shellBin = "${self.packages.${pkgs.system}.default}/bin/ags";
+  astalBin = "${astal.packages.${pkgs.system}.default}/bin/astal";
   unitName = "ags";
 in {
   options.services.ags = {
@@ -30,15 +33,12 @@ in {
       self.packages.${pkgs.system}.default
     ];
 
-    wayland.windowManager.hyprland.settings = let
-      hcfg = cfg.hyprlandIntegration;
-    in
-      mkIf hcfg.enable {
-        exec-once = mkIf hcfg.autostart.enable [
-          "systemctl --user restart ${unitName}.service"
+    wayland.windowManager.hyprland.settings = mkIf hcfg.enable {
+        exec-once = optionals hcfg.autostart.enable [
+          "systemctl --user restart ${unitName}"
         ];
-        bind = mkIf cfg.hyprlandIntegration.keybinds.enable [
-          "${cfg.hyprlandIntegration.keybinds.openAppLauncher},exec,${shellBin} toggle launcher"
+        bind = optionals hcfg.keybinds.enable [
+          "${hcfg.keybinds.openAppLauncher},exec,${astalBin} -t launcher"
         ];
       };
 

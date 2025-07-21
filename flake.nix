@@ -15,12 +15,18 @@
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    astal = {
+      url = "github:aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
     ags,
+    astal,
     flake-utils,
     ...
   }:
@@ -32,7 +38,7 @@
         ...
       }:
         import ./module.nix {
-          inherit lib pkgs config self;
+          inherit lib pkgs config self astal;
         };
     }
     // (flake-utils.lib.eachDefaultSystem (
