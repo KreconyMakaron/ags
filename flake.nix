@@ -31,7 +31,7 @@
     ...
   }:
     {
-      homeManagerModules.default = {
+      homeManagerModules.ags = {
         config,
         lib,
         pkgs,
@@ -65,7 +65,7 @@
           extraPackages = dependencies;
         };
 
-        devShells. default = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           buildInputs = [
             (ags.packages.${system}.default.override {
               extraPackages = dependencies;
